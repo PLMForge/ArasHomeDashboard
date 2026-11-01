@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<imports>
+	<!--
+		PLMForge.DashboardWidgets holds the four Dashboard Widget Templates
+		and the Home dashboard (exported with the Aras Package Import/Export
+		Utilities). Home.xml was cleaned by hand after export: see the README
+		section "The Home dashboard".
+
+		Fixes/ holds AML that edits items owned by Aras packages: the
+		Dashboard Widget Types list and the Core_GlobalLayout ItemType. Those
+		items cannot join this package, so they are edited in place. Files are
+		named [SourcePackageName].[ItemType].[KeyedName].xml.
+	-->
+	<package name="PLMForge.DashboardWidgets" path="FRG_DashboardWidgets">
+		<dependson name="com.aras.innovator.dashboards" />
+		<dependson name="com.aras.innovator.preferences" />
+	</package>
+</imports>

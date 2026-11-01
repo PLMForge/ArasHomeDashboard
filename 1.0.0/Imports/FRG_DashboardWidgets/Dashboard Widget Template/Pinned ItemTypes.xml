@@ -1,0 +1,9 @@
+﻿<AML>
+ <Item type="Dashboard Widget Template" id="DCD6391EAEF14D489A9009E70449BBF9" action="add">
+  <height_size>8</height_size>
+  <label xml:lang="en">Pinned Widget</label>
+  <type>PinnedItemTypes</type>
+  <width_size>1</width_size>
+  <name>Pinned ItemTypes</name>
+ </Item>
+</AML>

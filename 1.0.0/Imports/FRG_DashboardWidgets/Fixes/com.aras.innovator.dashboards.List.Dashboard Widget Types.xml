@@ -1,0 +1,30 @@
+﻿<AML>
+ <Item type="List" id="314FD17756864F96BDAE6513E02CD64B" action="edit">
+  <Relationships>
+   <Item type="Value" id="45A24CCAC9F74830BC3ADA0AB5648F5C" action="add">
+    <label xml:lang="en">InBasket Counts</label>
+    <sort_order>512</sort_order>
+    <source_id>314FD17756864F96BDAE6513E02CD64B</source_id>
+    <value>InBasketCounts</value>
+   </Item>
+   <Item type="Value" id="348DBF73D31B4D7C8489D70A6D22100A" action="add">
+    <label xml:lang="en">Pinned ItemTypes</label>
+    <sort_order>640</sort_order>
+    <source_id>314FD17756864F96BDAE6513E02CD64B</source_id>
+    <value>PinnedItemTypes</value>
+   </Item>
+   <Item type="Value" id="014F26DD447741089BBCB4A019FCA2AE" action="add">
+    <label xml:lang="en">Recently Viewed</label>
+    <sort_order>768</sort_order>
+    <source_id>314FD17756864F96BDAE6513E02CD64B</source_id>
+    <value>RecentlyViewed</value>
+   </Item>
+   <Item type="Value" id="B2D8FC6E0F0E420584901737531555E9" action="add">
+    <label xml:lang="en">Favorites</label>
+    <sort_order>896</sort_order>
+    <source_id>314FD17756864F96BDAE6513E02CD64B</source_id>
+    <value>Favorites</value>
+   </Item>
+  </Relationships>
+ </Item>
+</AML>

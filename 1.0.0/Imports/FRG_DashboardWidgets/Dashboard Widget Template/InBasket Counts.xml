@@ -1,0 +1,29 @@
+﻿<AML>
+ <Item type="Dashboard Widget Template" id="AA3794D180DE4FC7815579E6B96EBD14" action="add">
+  <height_size>8</height_size>
+  <label xml:lang="en">InBasket Widget</label>
+  <type>InBasketCounts</type>
+  <width_size>1</width_size>
+  <name>InBasket Counts</name>
+  <Relationships>
+   <Item type="Dashboard Widget Template Prop" id="34BB4EB336794A71BBBC305DFCBD6EBA" action="add">
+    <hidden>0</hidden>
+    <label xml:lang="en">Favorite search — Assigned to me</label>
+    <name>favorite_direct_id</name>
+    <prop_type>text</prop_type>
+    <required>0</required>
+    <sort_order>128</sort_order>
+    <source_id keyed_name="InBasket Counts" type="Dashboard Widget Template">AA3794D180DE4FC7815579E6B96EBD14</source_id>
+   </Item>
+   <Item type="Dashboard Widget Template Prop" id="81846E95EDAA43E891AE9C10D76D1BFC" action="add">
+    <hidden>0</hidden>
+    <label xml:lang="en">Favorite search — Assigned to my groups</label>
+    <name>favorite_group_id</name>
+    <prop_type>text</prop_type>
+    <required>0</required>
+    <sort_order>256</sort_order>
+    <source_id keyed_name="InBasket Counts" type="Dashboard Widget Template">AA3794D180DE4FC7815579E6B96EBD14</source_id>
+   </Item>
+  </Relationships>
+ </Item>
+</AML>

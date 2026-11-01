@@ -1,0 +1,2 @@
+# Store every file byte-for-byte (the package mixes CRLF and LF files, and a global core.autocrlf would convert them).
+* -text

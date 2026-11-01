@@ -1,0 +1,12 @@
+<resources>
+	<resource key="Innovator.Dir" value="Install Path" />
+	<resource key="Innovator.URL" value="Server URL" />
+	<resource key="Innovator.DB" value="Database" />
+	<resource key="Innovator.Username" value="Username" />
+	<resource key="Innovator.Password" value="Password" />
+
+	<resource key="Pkg.IS.Label" value="FRG Dashboard Widgets - Client Code Tree" />
+	<resource key="Pkg.IS.Desc" value="Copies the FRG widget modules into the Innovator client and registers them in the dashboard editor." />
+	<resource key="Pkg.DB.Label" value="FRG Dashboard Widgets - Database" />
+	<resource key="Pkg.DB.Desc" value="Adds the widget types, widget templates, the Home dashboard and the Recently Viewed preference property to the Innovator database." />
+</resources>
