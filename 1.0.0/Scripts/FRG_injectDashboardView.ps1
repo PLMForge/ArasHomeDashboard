@@ -31,6 +31,13 @@ if (-not (Test-Path -LiteralPath $Path)) {
 $content = [System.IO.File]::ReadAllText($Path)
 $original = $content
 
+# Kept so the write below can put it back. At startup the Client app compares
+# the newest modification time under Modules\ (and styles\less, Solutions)
+# with jsBundles\data.json, and rebuilds its bundles when they differ. The app
+# pool can't write to jsBundles, so that rebuild fails on every start, adding
+# seconds to each cold start. Leaving the view's time unchanged avoids it.
+$originalWriteTimeUtc = [System.IO.File]::GetLastWriteTimeUtc($Path)
+
 # Stock views ship with either CRLF or LF depending on the release. Inserted
 # blocks use the view's own line ending so the file stays consistent.
 $nl = if ($content.Contains("`r`n")) { "`r`n" } else { "`n" }
@@ -142,5 +149,8 @@ if ($content -eq $original) {
 # Preserve the BOM: the stock view ships with one and Razor is sensitive to it.
 $utf8Bom = New-Object System.Text.UTF8Encoding($true)
 [System.IO.File]::WriteAllText($Path, $content, $utf8Bom)
-Write-Step "updated $Path"
+# Put the original modification time back (see $originalWriteTimeUtc above).
+# The app restart that follows the install still compiles the edited view.
+[System.IO.File]::SetLastWriteTimeUtc($Path, $originalWriteTimeUtc)
+Write-Step "updated $Path (modification time kept)"
 exit 0
