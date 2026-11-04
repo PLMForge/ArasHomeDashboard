@@ -51,8 +51,8 @@ entry. Causes include:
 - a permission change;
 - the item being deleted.
 
-The widgets ask the server each time they load or are refreshed. Otherwise they
-rely on an answer at most a minute old.
+A change in access shows the next time the widget loads, or straight away
+after **Refresh** in the widget's menu.
 
 ### Using Quick Find
 
@@ -103,9 +103,9 @@ search it for that user.
 Quick Find was tested with 100,000 items in each of Part, Document and CAD, and
 with a Mandatory Access Control policy active.
 
-The ItemType filter on Recently Viewed and Favorites is remembered per user and
-per widget in the browser's localStorage, so it survives a page reload. It is
-not shared between browsers or machines.
+The ItemType filter on Recently Viewed and Favorites is remembered in the
+browser, per user and per widget, so it survives a page reload. It is not
+shared between browsers or machines.
 
 Right-clicking an entry opens Aras's own context menu, in the client's theme:
 
@@ -176,8 +176,8 @@ restart and no changes to Aras's compiled bundles.
 
 ### Client Code Tree module
 
-- Copies seven files into `Innovator\Client\customer\dashboard\`, all named
-  `FRG_*.js`.
+- Copies the widget files into `Innovator\Client\customer\dashboard\`, all
+  named `FRG_*.js`.
 - Increments `filesRevision` in `Innovator\Client\InnovatorClient.config`, so
   browsers fetch the new files instead of cached ones.
 - Adds a small, clearly marked block to one Aras file:
@@ -264,9 +264,7 @@ screenshot at the top of this README is Home for a typical engineering user.
 | Middle | Favorites, full height (11 items before it scrolls) |
 | Right | Recently Viewed, full height, set to 11 items so it never scrolls |
 
-The sizes come from the dashboard grid: 24 columns, rows 32 px high with an
-8 px gap, so a widget *h* rows high is 40*h* - 8 px. Seventeen rows fill the
-space a maximised Chrome window leaves on a 1920 × 1080 screen, even with the
+Home fills a maximised browser window on a 1920 × 1080 screen, even with the
 bookmarks bar shown. The In-Basket Tasks widget has no saved searches chosen,
 so each user gets their own (see
 [InBasket saved searches](#inbasket-saved-searches)).
@@ -308,19 +306,6 @@ them with existing users when you introduce Home.
 **Changes to Home are overwritten** when the Database module runs again,
 because the package owns it. To customise it, copy it under a new name with
 *Save As* and change the copy.
-
-**How Home.xml was made.** It was exported with the Package Import/Export
-Utilities and then cleaned by hand. If you export it again, make the same
-changes:
-
-- Remove `presentation` and `team_id`. They point at items that exist only
-  in the source database. The dashboard's own server events create fresh
-  ones when it is added.
-- Remove the second copy of each Dashboard Widget. The exporter writes every
-  widget twice, and importing the duplicate fails.
-- Remove the `Dashboard_AccessSharing` item. On releases without sharing it
-  fails the whole import. `package.config` adds the share afterwards, and
-  only where the release supports it.
 
 ## Upgrading Innovator
 
@@ -368,8 +353,7 @@ Aras Update has no uninstall action. To remove the widgets by hand:
   still don't show, check that the `X-salt=...` segment in the page's script
   URLs starts with the current `filesRevision` from `InnovatorClient.config`.
   If it doesn't, the Client application hasn't restarted yet: restart it in
-  IIS.
-- **Errors appear in the browser console:** the widgets log with prefixes
+  IIS.- **Errors appear in the browser console:** the widgets log with prefixes
   such as `[FRG]`, `[InBasketCounts]`, `[PinnedItemTypes]`, `[RecentlyViewed]`, `[Favorites]`,
   `[RecentItems]` and `[QuickFind]`.
 - **The Database module fails:** Aras Update shows only that the import

@@ -17,7 +17,7 @@ Favorites and Recently Viewed. `FRG_itemVersions.js` makes Favorites and
 Recently Viewed open the latest generation of a versionable item, and lets
 Recently Viewed list each item once across its generations. `FRG_itemAccess.js`
 hides the entries in both that the user can no longer read (Mandatory Access
-Control, permissions, deletion), with one query per ItemType.
+Control, permissions, deletion).
 
 Installs into Innovator 14.0.25 or later (tested on 14.0.25 and 14.35.0).
 Requires Aras Update 1.18 or later.
@@ -53,13 +53,12 @@ See `README.md` in the ArasHomeDashboard repository for the full guide.
     imports.mf                    <- package PLMForge.DashboardWidgets
     FRG_DashboardWidgets/
       Dashboard Widget Template/  <- the five templates (exported AML)
-      cui_Dashboard/Home.xml      <- the Home dashboard (exported, then cleaned)
+      cui_Dashboard/Home.xml      <- the Home dashboard
       Fixes/                      <- edits to items owned by Aras packages
 ```
 
-Files in `Fixes/` are named `[SourcePackageName].[ItemType].[KeyedName].xml`.
-Each one edits an existing Aras item (`action="edit"`) and adds this
-package's rows to it.
+Each file in `Fixes/` edits an existing Aras item (`action="edit"`) and adds
+this package's rows to it. Nothing else in those items is changed.
 
 ## Modules
 
@@ -141,15 +140,3 @@ the names that were added to the import line. Optionally delete the `FRG_*.js`
 files from `Client\customer\dashboard\`. Aras Update has no uninstall action.
 
 **After an Innovator upgrade** that replaces this view, run the package again.
-
-## Updating the AML
-
-The templates and the Home dashboard belong to the PackageDefinition
-`PLMForge.DashboardWidgets`. After changing them in Innovator, export that
-package with the Aras Package Import/Export Utilities and replace the files in
-`Imports/FRG_DashboardWidgets/Dashboard Widget Template/` and
-`Imports/FRG_DashboardWidgets/cui_Dashboard/`. Clean the exported `Home.xml`
-as described in the main README ("How Home.xml was made") before committing it.
-
-Items owned by Aras packages can't be added to `PLMForge.DashboardWidgets`.
-Changes to those go in `Fixes/` as hand-written `edit` AML.
