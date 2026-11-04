@@ -63,7 +63,7 @@
    <Item type="Dashboard Widget" id="B16D664665974706989B52A371A37B22" action="add">
     <height_size>17</height_size>
     <icon>../images/Search.svg</icon>
-    <label xml:lang="en">Quick Find Widget</label>
+    <label xml:lang="en">Quick Find</label>
     <position_x>8</position_x>
     <position_y>0</position_y>
     <related_id keyed_name="Quick Find" type="Dashboard Widget Template">7A75F9DCF3094BA29B86B75645F13195</related_id>
