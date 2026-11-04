@@ -2,7 +2,7 @@
 
 An Aras Update package that gives Aras Innovator users a friendlier home
 page: five custom dashboard widgets, and a ready-made **Home** dashboard that
-shows four of them together.
+shows them all together.
 
 | Widget | Type key | Module |
 |---|---|---|

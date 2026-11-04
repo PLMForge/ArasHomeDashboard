@@ -1,7 +1,7 @@
 ﻿<AML>
  <Item type="cui_Dashboard" id="28D061D9ACB041CC8E6D9E5AAF225EF5" action="add">
   <columns>24</columns>
-  <description>Start page: your in-basket tasks, pinned ItemTypes, favorites and recently viewed items.</description>
+  <description>Start page: quick find, your in-basket tasks, pinned ItemTypes, favorites and recently viewed items.</description>
   <name>Home</name>
   <Relationships>
    <Item type="Dashboard Widget" id="C1BC961A14CC42788E2880AE0E21DCA9" action="add">
@@ -36,29 +36,42 @@
     <height_size>17</height_size>
     <icon>../images/FavoriteOff.svg</icon>
     <label xml:lang="en">Favorites</label>
-    <position_x>8</position_x>
+    <position_x>14</position_x>
     <position_y>0</position_y>
     <related_id keyed_name="Favorites" type="Dashboard Widget Template">B6F9DD2CE0F94F309B4531DE75C3F7FA</related_id>
     <shared_data>{}</shared_data>
     <sort_order>384</sort_order>
     <source_id keyed_name="Home" type="cui_Dashboard">28D061D9ACB041CC8E6D9E5AAF225EF5</source_id>
     <widget_data>{}</widget_data>
-    <width_size>8</width_size>
+    <width_size>5</width_size>
     <name>Favorites_B13B38FCA70A4D8CBCC2F54466D811ED</name>
    </Item>
    <Item type="Dashboard Widget" id="93AFB4E8192F4FA69717C3CEEC70D8E3" action="add">
     <height_size>17</height_size>
     <icon>../images/View.svg</icon>
     <label xml:lang="en">Recently Viewed</label>
-    <position_x>16</position_x>
+    <position_x>19</position_x>
     <position_y>0</position_y>
     <related_id keyed_name="Recently Viewed" type="Dashboard Widget Template">8BA993ED7FF74B45A2EEDB291EB75BFD</related_id>
     <shared_data>{}</shared_data>
     <sort_order>512</sort_order>
     <source_id keyed_name="Home" type="cui_Dashboard">28D061D9ACB041CC8E6D9E5AAF225EF5</source_id>
     <widget_data>{"max_items":"11"}</widget_data>
-    <width_size>8</width_size>
+    <width_size>5</width_size>
     <name>Recently Viewed_93AFB4E8192F4FA69717C3CEEC70D8E3</name>
+   </Item>
+   <Item type="Dashboard Widget" id="B16D664665974706989B52A371A37B22" action="add">
+    <height_size>17</height_size>
+    <icon>../images/Search.svg</icon>
+    <label xml:lang="en">Quick Find Widget</label>
+    <position_x>8</position_x>
+    <position_y>0</position_y>
+    <related_id keyed_name="Quick Find" type="Dashboard Widget Template">7A75F9DCF3094BA29B86B75645F13195</related_id>
+    <sort_order>640</sort_order>
+    <source_id keyed_name="Home" type="cui_Dashboard">28D061D9ACB041CC8E6D9E5AAF225EF5</source_id>
+    <widget_data>{"item_types":"Part: item_number, name; Document: item_number, name; CAD: item_number, name","max_per_type":"5"}</widget_data>
+    <width_size>6</width_size>
+    <name>Quick Find_B16D664665974706989B52A371A37B22</name>
    </Item>
   </Relationships>
  </Item>

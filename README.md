@@ -5,7 +5,7 @@ A friendlier home page for Aras Innovator, packaged for administrators.
 New users need a starting point that doesn't depend on already knowing the
 Contents tree. Experienced users want the work they do every day one click
 away. This package gives you both in one Aras Update install: five dashboard
-widgets, and a ready-made **Home** dashboard that brings four of them together on
+widgets, and a ready-made **Home** dashboard that brings them all together on
 one screen. Set it as each user's
 [login view](#making-home-the-start-page) and Home is the first thing they
 see.
@@ -22,6 +22,8 @@ Home answers the questions people log in with:
   starred.
 - **What was I working on?** Recently Viewed lists the items they opened
   last, across sessions.
+- **Where is that item?** Quick Find finds items by number or name as they
+  type.
 
 There is nothing to set up per user. Every widget shows the current user's
 own data, built from things they already do in Innovator: pinning, starring
@@ -37,7 +39,7 @@ favorites are listed here*.
 | **Pinned ItemTypes** | The ItemTypes the user has pinned in the navigation panel, as clickable tiles. Click a tile to open that ItemType's search. Updates live when pins change. |
 | **Recently Viewed** | Items the user has opened, newest first, with a filter by ItemType. Updates live as items are opened, and is kept between sessions. A versionable item is listed once, however many of its generations were opened. |
 | **Favorites** | Items the user has marked as favorites, across all ItemTypes, with a filter by ItemType. Click an item to open it. Updates live as items are added to or removed from favorites. |
-| **Quick Find** | A search box across chosen ItemTypes. It finds items by number from the first character, and by any word in their chosen fields from the third. Results are grouped by ItemType. Enter or a click opens the item. A filter button lets each user choose the ItemTypes and fields. Not on the Home dashboard: add it where you want it. |
+| **Quick Find** | A search box across chosen ItemTypes. It finds items by number from the first character, and by any word in their chosen fields from the third. Results are grouped by ItemType. Enter or a click opens the item. A filter button lets each user choose the ItemTypes and fields. |
 
 For a versionable item, Favorites and Recently Viewed open its **latest
 generation**, as the Favorites list in the table of contents does, even if the
@@ -81,8 +83,7 @@ after **Refresh** in the widget's menu.
 
 ### Quick Find settings
 
-Quick Find is not on Home. Add it to a dashboard in edit mode, then edit the
-widget to set:
+Edit the widget on a dashboard to set:
 
 - **ItemTypes:** what users search until they choose their own. For example:
   `Part: item_number, name; Document: item_number, name; CAD`.
@@ -254,14 +255,15 @@ already has is reused.
 
 ## The Home dashboard
 
-A start page that shows all four widgets at once, laid out to fit a 1080p
-monitor without scrolling, either in the page or inside a widget. The
-screenshot at the top of this README is Home for a typical engineering user.
+A start page that shows all five widgets at once, laid out to fit a 1080p
+monitor without scrolling the page. The screenshot at the top of this README
+is Home for a typical engineering user.
 
 | Column | Widgets |
 |---|---|
 | Left | In-Basket Tasks, with Pinned ItemTypes below it (room for 10 pins) |
-| Middle | Favorites, full height (11 items before it scrolls) |
+| Centre | Quick Find, full height, searching Parts, Documents and CAD Documents by number and name |
+| Centre right | Favorites, full height (11 items before it scrolls) |
 | Right | Recently Viewed, full height, set to 11 items so it never scrolls |
 
 Home fills a maximised browser window on a 1920 × 1080 screen, even with the
