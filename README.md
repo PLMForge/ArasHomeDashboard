@@ -42,6 +42,17 @@ For a versionable item, both widgets open its **latest generation**, as the
 Favorites list in the table of contents does, even if the item was versioned
 after it was viewed or marked as a favorite.
 
+Both widgets list only items the user can still read. If an item becomes
+unreadable to the user, it disappears from both widgets but stays in the saved
+list and in the user's favorites; if access returns, so does the entry. Causes
+include:
+- a Mandatory Access Control policy;
+- a permission change;
+- the item being deleted.
+
+The widgets ask the server each time they load or are refreshed. Otherwise they
+rely on an answer at most a minute old.
+
 The ItemType filter on Recently Viewed and Favorites is remembered per user and
 per widget in the browser's localStorage, so it survives a page reload. It is
 not shared between browsers or machines.

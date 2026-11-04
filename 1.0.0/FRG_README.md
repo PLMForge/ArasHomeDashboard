@@ -14,7 +14,9 @@ shows them together.
 `FRG_widgetContextMenu.js` adds the right-click menus to Pinned ItemTypes,
 Favorites and Recently Viewed. `FRG_itemVersions.js` makes Favorites and
 Recently Viewed open the latest generation of a versionable item, and lets
-Recently Viewed list each item once across its generations.
+Recently Viewed list each item once across its generations. `FRG_itemAccess.js`
+hides the entries in both that the user can no longer read (Mandatory Access
+Control, permissions, deletion), with one query per ItemType.
 
 Installs into Innovator 14.0.25 or later (tested on 14.0.25 and 14.35.0).
 Requires Aras Update 1.18 or later.
@@ -40,6 +42,7 @@ See `README.md` in the ArasHomeDashboard repository for the full guide.
     FRG_favoritesWidget.js
     FRG_widgetContextMenu.js  <- right-click menus shared by three widgets
     FRG_itemVersions.js       <- latest generation / one entry per item, for two widgets
+    FRG_itemAccess.js         <- hides entries the user can no longer read, for two widgets
   Scripts/
     FRG_injectDashboardView.ps1   <- adds the registration call to the dashboard view
     FRG_restartClientApp.ps1      <- restarts the Client app so the new cache token applies

@@ -29,10 +29,16 @@
  * is untouched and comes back the next time it is opened. The label says
  * 'Hide' on purpose: 'Remove' or 'Delete' next to an item reads as an action
  * on the item.
+ *
+ * Only items the user can still read are listed: an entry the user has lost
+ * access to since (a Mandatory Access Control policy, a permission change, a
+ * deletion) is hidden, not dropped from the list, and comes back if access
+ * does (FRG_itemAccess.js). Each load and Refresh asks the server again.
  */
 
 import { attachContextMenu, reportActionError } from './FRG_widgetContextMenu.js';
 import { openLatestItem } from './FRG_itemVersions.js';
+import { checkReadable, readableEntries } from './FRG_itemAccess.js';
 
 const STYLE_ELEMENT_ID = 'recently-viewed-widget-style';
 const DEFAULT_MAX_ITEMS = 15;
@@ -243,6 +249,8 @@ const buildTypeOptions = (items) => {
 
 const optionsSignature = (options) => options.map((option) => option.type).join('|');
 
+const accessRef = (item) => ({ type: item.type, id: item.id, configId: item.configId || null });
+
 // ---------------------------------------------------------- saved filter
 // The Type filter is kept in localStorage, per user and per widget, so it
 // survives a browser reload. The widget part of the key is the Dashboard
@@ -299,6 +307,9 @@ export default function createRecentlyViewedLayout(WidgetLayout, recentItems) {
 		#fallbackSelect = null;
 		#optionsSignature = null;
 		#items = [];
+		// Access answers older than this are asked again (FRG_itemAccess.js).
+		#accessSince = Date.now();
+		#accessChecks = 0;
 
 		async init() {
 			// super.init() first: with location === '' it loads no CUI controls and
@@ -362,6 +373,7 @@ export default function createRecentlyViewedLayout(WidgetLayout, recentItems) {
 		 */
 		async refreshData() {
 			this.#setStatus('loading');
+			this.#accessSince = Date.now();
 			try {
 				recentItems.flushNow();
 				this.#items = recentItems.read();
@@ -414,15 +426,31 @@ export default function createRecentlyViewedLayout(WidgetLayout, recentItems) {
 			return (this.state && this.state.filterType) || null;
 		}
 
-		#visibleItems() {
+		/** The entries the user can still read, newest first. */
+		#readableItems() {
+			return readableEntries(this.#items, accessRef, this.#accessSince, (stale) =>
+				this.#checkAccess(stale)
+			);
+		}
+
+		#checkAccess(refs) {
+			this.#accessChecks++;
+			checkReadable(refs).finally(() => {
+				this.#accessChecks--;
+				if (!this.destroyed) {
+					this.#render();
+				}
+			});
+		}
+
+		/** Hidden entries are left out before the cap, so they free their rows. */
+		#visibleItems(readable) {
 			const max = toPositiveInt(
 				this.state && this.state.max_items,
 				DEFAULT_MAX_ITEMS
 			);
 			const filter = this.#filterType();
-			return this.#items
-				.filter((item) => !filter || item.type === filter)
-				.slice(0, max);
+			return readable.filter((item) => !filter || item.type === filter).slice(0, max);
 		}
 
 		#onFilterSelect(type) {
@@ -584,24 +612,38 @@ export default function createRecentlyViewedLayout(WidgetLayout, recentItems) {
 				return;
 			}
 
-			const options = buildTypeOptions(this.#items);
+			const readable = this.#readableItems();
+			const options = buildTypeOptions(readable);
 			this.#renderFilterControl(options);
 
 			// A filter whose type has aged out of the list is dropped rather than
 			// leaving the user staring at an empty widget with no obvious way back.
 			// Not while the list is empty: nothing has aged out then, and dropping
-			// it would wipe the saved filter too.
+			// it would wipe the saved filter too. Nor while access is being
+			// checked: the type may only be missing because it is not confirmed yet.
+			const checking = this.#accessChecks > 0;
 			const active = this.#filterType();
-			if (active && options.length > 0 && !options.some((option) => option.type === active)) {
+			if (
+				active &&
+				!checking &&
+				options.length > 0 &&
+				!options.some((option) => option.type === active)
+			) {
 				this.#onFilterSelect(null);
 				return;
 			}
 
-			const items = this.#visibleItems();
+			const items = this.#visibleItems(readable);
 			this.#removeMessage();
 
+			if (items.length === 0 && checking) {
+				// Nothing confirmed yet: no "Nothing viewed yet" message for a moment.
+				this.#list.textContent = '';
+				return;
+			}
+
 			if (items.length === 0) {
-				const filtered = Boolean(active) && this.#items.length > 0;
+				const filtered = Boolean(active) && readable.length > 0;
 				this.#list.textContent = '';
 				this.#renderMessage(
 					filtered ? LABELS.emptyFiltered : LABELS.empty,

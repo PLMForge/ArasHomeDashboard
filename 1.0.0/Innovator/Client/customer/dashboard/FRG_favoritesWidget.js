@@ -26,10 +26,16 @@
  *
  * Right-clicking a row offers Remove from Favorites, which deletes the
  * favorite the way the client's own menus do (see FRG_widgetContextMenu.js).
+ *
+ * Only favorites the user can still read are listed: one the user has lost
+ * access to (a Mandatory Access Control policy, a permission change, a
+ * deletion) is hidden, not removed, and comes back if access does
+ * (FRG_itemAccess.js). Each load and Refresh asks the server again.
  */
 
 import { attachContextMenu, isFavoriteInStore, removeFavorite } from './FRG_widgetContextMenu.js';
 import { openLatestItem } from './FRG_itemVersions.js';
+import { checkReadable, readableEntries } from './FRG_itemAccess.js';
 
 const STYLE_ELEMENT_ID = 'favorites-widget-style';
 const ALL_TYPES_KEY = '__all';
@@ -300,6 +306,9 @@ const buildTypeOptions = (entries) => {
 
 const optionsSignature = (options) => options.map((option) => option.type).join('|');
 
+// An Item favorite stores the item's config_id (see FRG_itemVersions.js).
+const accessRef = (entry) => ({ type: entry.type, id: entry.itemId, configId: entry.itemId });
+
 // ---------------------------------------------------------- saved filter
 // The Type filter is kept in localStorage, per user and per widget, so it
 // survives a browser reload. The widget part of the key is the Dashboard
@@ -360,6 +369,9 @@ export default function createFavoritesLayout(WidgetLayout) {
 		// Non-null only between a manual Refresh and the next store-driven props
 		// change, as in the Pinned ItemTypes widget.
 		#serverEntries = null;
+		// Access answers older than this are asked again (FRG_itemAccess.js).
+		#accessSince = Date.now();
+		#accessChecks = 0;
 
 		async init() {
 			// super.init() first: with location === '' it loads no CUI controls and
@@ -416,6 +428,7 @@ export default function createFavoritesLayout(WidgetLayout) {
 		 */
 		async refreshData() {
 			const token = ++this.#loadToken;
+			this.#accessSince = Date.now();
 			this.#setStatus('loading');
 			try {
 				const favorites = await this.#fetchFavorites();
@@ -441,8 +454,22 @@ export default function createFavoritesLayout(WidgetLayout) {
 
 		// ------------------------------------------------------------------ data
 
+		/** The favorites to list: those the user can still read. */
 		#entries() {
-			return this.#serverEntries || (this.props && this.props.entries) || [];
+			const entries = this.#serverEntries || (this.props && this.props.entries) || [];
+			return readableEntries(entries, accessRef, this.#accessSince, (stale) =>
+				this.#checkAccess(stale)
+			);
+		}
+
+		#checkAccess(refs) {
+			this.#accessChecks++;
+			checkReadable(refs).finally(() => {
+				this.#accessChecks--;
+				if (!this.destroyed) {
+					this.#render();
+				}
+			});
 		}
 
 		async #fetchFavorites() {
@@ -645,9 +672,16 @@ export default function createFavoritesLayout(WidgetLayout) {
 			// A filter whose last favorite was removed is dropped rather than
 			// leaving an empty widget with no obvious way back. Not while the list
 			// is empty, though: that would also wipe a saved filter before the
-			// favorites have arrived.
+			// favorites have arrived, nor while access is being checked: the type
+			// may only be missing because its favorites are not confirmed yet.
+			const checking = this.#accessChecks > 0;
 			const active = this.#filterType();
-			if (active && options.length > 0 && !options.some((option) => option.type === active)) {
+			if (
+				active &&
+				!checking &&
+				options.length > 0 &&
+				!options.some((option) => option.type === active)
+			) {
 				this.#onFilterSelect(null);
 				return;
 			}
@@ -656,6 +690,12 @@ export default function createFavoritesLayout(WidgetLayout) {
 				? allEntries.filter((entry) => entry.type === active)
 				: allEntries;
 			this.#removeMessage();
+
+			if (entries.length === 0 && checking) {
+				// Nothing confirmed yet: no "No favorites" message for a moment.
+				this.#list.textContent = '';
+				return;
+			}
 
 			if (entries.length === 0) {
 				const filtered = Boolean(active) && allEntries.length > 0;
