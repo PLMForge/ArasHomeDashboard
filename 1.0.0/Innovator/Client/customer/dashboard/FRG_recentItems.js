@@ -27,7 +27,17 @@
  * layout's mapStateToProps is not re-run for the very update that changes this
  * list, so a mapStateToProps consumer would show stale data until some unrelated
  * update arrived.
+ *
+ * VERSIONABLE ITEMS
+ * Each generation of a versionable item has its own id, so an item opened, then
+ * versioned and opened again would be listed once per generation. Entries carry
+ * the item's configId (shared by every generation, see FRG_itemVersions.js) and
+ * the list keeps one entry per configId: the newest open. Entries saved before
+ * configId existed are resolved once per session, with one query per ItemType.
+ * The widget opens the latest generation whichever one an entry points at.
  */
+
+import { isVersionable, knownConfigId, versionKey } from './FRG_itemVersions.js';
 
 const STORE_KEY = 'customer.recentlyViewed';
 const PREF_TYPE = 'Core_GlobalLayout';
@@ -68,6 +78,23 @@ const EMPTY = Object.freeze([]);
 
 const isValidEntry = (entry) =>
 	Boolean(entry && typeof entry === 'object' && entry.id && entry.type);
+
+/** Keeps the first (newest) entry of each item, across its generations. */
+const dedupe = (items) => {
+	const seen = new Set();
+	return items.filter((entry) => {
+		const key = versionKey(entry);
+		if (seen.has(key)) {
+			return false;
+		}
+		seen.add(key);
+		return true;
+	});
+};
+
+const ID_PATTERN = /^[0-9A-F]{32}$/i;
+const xmlAttr = (value) =>
+	String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
 const create = (mainWindow) => {
 	// Deliberately shadows the ambient `aras`. This singleton outlives whichever
@@ -136,11 +163,107 @@ const create = (mainWindow) => {
 			const parsed = raw ? JSON.parse(raw) : [];
 			// Anything captured before load ran outranks the persisted copy.
 			if (Array.isArray(parsed) && read().length === 0) {
-				write(parsed.filter(isValidEntry).slice(0, CAP));
+				write(dedupe(parsed.filter(isValidEntry)).slice(0, CAP));
 			}
 		} catch (ex) {
 			console.warn('[RecentItems] could not read stored list', ex);
 		}
+		// Off the load path: load() is synchronous and runs during a widget's init.
+		setTimeout(backfillConfigIds, 0);
+	};
+
+	/** config_id of each id, for one versionable ItemType: one async query. */
+	const fetchConfigIds = async (type, ids) => {
+		const found = new Map();
+		const valid = ids.filter((id) => ID_PATTERN.test(id));
+		if (!valid.length || !mainWindow.ArasModules) {
+			return found;
+		}
+		const body =
+			`<Item type="${xmlAttr(type)}" action="get" select="config_id" idlist="${valid.join(',')}"/>`;
+		// Rejects with a SOAP fault when none of the ids can be read (deleted, no
+		// access); the caller keeps those entries as they are.
+		const result = await mainWindow.ArasModules.soap(body, {
+			method: 'ApplyItem',
+			async: true,
+			headers: aras.getHttpHeadersForSoapMessage('ApplyItem'),
+			url: aras.getServerURL()
+		});
+		for (const item of Array.from(result.getElementsByTagName('Item'))) {
+			const id = item.getAttribute('id');
+			const configNode = item.getElementsByTagName('config_id')[0];
+			const configId = configNode && configNode.textContent.trim();
+			if (id && configId) {
+				found.set(id, configId);
+			}
+		}
+		return found;
+	};
+
+	/**
+	 * Gives entries without a configId (saved before it existed, or captured
+	 * before the item reached the items cache) their configId, then drops the
+	 * older generations' duplicates. Each id is queried at most once per
+	 * session; one that cannot be resolved stays as it is.
+	 */
+	const attempted = new Set();
+	let backfillRunning = false;
+	const backfillConfigIds = async () => {
+		if (backfillRunning) {
+			return;
+		}
+		backfillRunning = true;
+		try {
+			await resolveMissingConfigIds();
+		} finally {
+			backfillRunning = false;
+		}
+		// An entry pushed while this ran.
+		if (read().some((entry) => !entry.configId && !attempted.has(entry.id))) {
+			setTimeout(backfillConfigIds, 0);
+		}
+	};
+	const resolveMissingConfigIds = async () => {
+		const resolved = new Map();
+		const pending = new Map();
+		for (const entry of read()) {
+			if (entry.configId || attempted.has(entry.id)) {
+				continue;
+			}
+			attempted.add(entry.id);
+			const known = knownConfigId(entry.type, entry.id, null, aras);
+			if (known) {
+				resolved.set(entry.id, known);
+			} else if (isVersionable(entry.type, aras)) {
+				if (!pending.has(entry.type)) {
+					pending.set(entry.type, []);
+				}
+				pending.get(entry.type).push(entry.id);
+			}
+		}
+		for (const [type, ids] of pending) {
+			try {
+				(await fetchConfigIds(type, ids)).forEach((configId, id) =>
+					resolved.set(id, configId)
+				);
+			} catch (ex) {
+				console.info('[RecentItems] could not resolve versions for ' + type, ex);
+			}
+		}
+		if (!resolved.size) {
+			return;
+		}
+		// Applied to the list as it is now: items may have been opened meanwhile.
+		const current = read();
+		const next = dedupe(
+			current.map((entry) =>
+				!entry.configId && resolved.has(entry.id)
+					? { ...entry, configId: resolved.get(entry.id) }
+					: entry
+			)
+		);
+		write(next);
+		scheduleFlush();
 	};
 
 	const flush = () => {
@@ -179,8 +302,18 @@ const create = (mainWindow) => {
 			return;
 		}
 		load();
-		write([entry, ...read().filter((i) => i.id !== entry.id)].slice(0, CAP));
+		// One entry per item: an earlier open of any generation is replaced.
+		const key = versionKey(entry);
+		write(
+			[entry, ...read().filter((i) => i.id !== entry.id && versionKey(i) !== key)].slice(
+				0,
+				CAP
+			)
+		);
 		scheduleFlush();
+		if (!entry.configId) {
+			setTimeout(backfillConfigIds, 0);
+		}
 	};
 
 	const findMainWindowTabs = () => {
@@ -202,7 +335,9 @@ const create = (mainWindow) => {
 	 * this just watches for new ones, without editing any item view page.
 	 */
 	const installTabCapture = () => {
-		const recorded = new Set();
+		// tab id -> the item id recorded for it. A tab whose item changes (a new
+		// generation shown in place) is recorded again.
+		const recorded = new Map();
 		let prevLayout = null;
 
 		const scan = () => {
@@ -224,15 +359,15 @@ const create = (mainWindow) => {
 				// Item tabs are the only ones carrying both; search, form and page
 				// tabs are skipped. A new tab is also seen once before these fields
 				// are filled in, hence the guard rather than a blanket recorded.add().
-				if (!tab || !tab.itemId || !tab.itemTypeId || recorded.has(tabId)) {
+				if (!tab || !tab.itemId || !tab.itemTypeId || recorded.get(tabId) === tab.itemId) {
 					continue;
 				}
-				recorded.add(tabId);
+				recorded.set(tabId, tab.itemId);
 				recordTab(tab);
 			}
 
 			// Forget closed tabs so reopening the same item records it again.
-			for (const tabId of recorded) {
+			for (const tabId of [...recorded.keys()]) {
 				if (!(tabId in tabs)) {
 					recorded.delete(tabId);
 				}
@@ -252,6 +387,9 @@ const create = (mainWindow) => {
 		const itemTypeNode = aras.getItemTypeNodeForClient(type);
 		push({
 			id: tab.itemId,
+			// From the items cache, where the opened item already is; if it is not
+			// there yet, backfillConfigIds resolves it right after the push.
+			configId: knownConfigId(type, tab.itemId, null, aras),
 			type,
 			typeLabel:
 				(itemTypeNode && aras.getItemProperty(itemTypeNode, 'label')) || type,
@@ -299,6 +437,7 @@ const create = (mainWindow) => {
 			const itemTypeNode = aras.getItemTypeNodeForClient(itemTypeName);
 			push({
 				id,
+				configId: knownConfigId(itemTypeName, id, itemNd, aras),
 				type: itemTypeName,
 				typeLabel:
 					(itemTypeNode && aras.getItemProperty(itemTypeNode, 'label')) ||

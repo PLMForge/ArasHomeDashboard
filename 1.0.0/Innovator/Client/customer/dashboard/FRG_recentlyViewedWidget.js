@@ -32,6 +32,7 @@
  */
 
 import { attachContextMenu, reportActionError } from './FRG_widgetContextMenu.js';
+import { openLatestItem } from './FRG_itemVersions.js';
 
 const STYLE_ELEMENT_ID = 'recently-viewed-widget-style';
 const DEFAULT_MAX_ITEMS = 15;
@@ -713,8 +714,10 @@ export default function createRecentlyViewedLayout(WidgetLayout, recentItems) {
 		}
 
 		/**
-		 * Opens the item with aras.uiShowItem, which re-fetches it and runs the
-		 * ItemType's OnShowItem event as any other "open item" does. A deleted or
+		 * Opens the latest generation of the item (openLatestItem): an entry keeps
+		 * the id of the generation that was opened, and the item may have been
+		 * versioned since. The open itself is aras.uiShowItem, which re-fetches the
+		 * item and runs the ItemType's OnShowItem event; a deleted or
 		 * now-inaccessible item raises the standard "access restricted or does not
 		 * exist" alert.
 		 */
@@ -723,7 +726,7 @@ export default function createRecentlyViewedLayout(WidgetLayout, recentItems) {
 			if (!row || !row.dataset.id) {
 				return;
 			}
-			aras.uiShowItem(row.dataset.type, row.dataset.id);
+			openLatestItem(row.dataset.type, row.dataset.id);
 		}
 	};
 }

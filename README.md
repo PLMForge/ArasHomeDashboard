@@ -35,8 +35,12 @@ favorites are listed here*.
 |---|---|
 | **In-Basket Tasks** | How many active workflow tasks the current user has, split into tasks assigned to them directly and tasks reached through a group. Click a number to open the InBasket filtered to those tasks. |
 | **Pinned ItemTypes** | The ItemTypes the user has pinned in the navigation panel, as clickable tiles. Click a tile to open that ItemType's search. Updates live when pins change. |
-| **Recently Viewed** | Items the user has opened, newest first, with a filter by ItemType. Updates live as items are opened, and is kept between sessions. |
+| **Recently Viewed** | Items the user has opened, newest first, with a filter by ItemType. Updates live as items are opened, and is kept between sessions. A versionable item is listed once, however many of its generations were opened. |
 | **Favorites** | Items the user has marked as favorites, across all ItemTypes, with a filter by ItemType. Click an item to open it. Updates live as items are added to or removed from favorites. |
+
+For a versionable item, both widgets open its **latest generation**, as the
+Favorites list in the table of contents does, even if the item was versioned
+after it was viewed or marked as a favorite.
 
 The ItemType filter on Recently Viewed and Favorites is remembered per user and
 per widget in the browser's localStorage, so it survives a page reload. It is

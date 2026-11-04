@@ -29,6 +29,7 @@
  */
 
 import { attachContextMenu, isFavoriteInStore, removeFavorite } from './FRG_widgetContextMenu.js';
+import { openLatestItem } from './FRG_itemVersions.js';
 
 const STYLE_ELEMENT_ID = 'favorites-widget-style';
 const ALL_TYPES_KEY = '__all';
@@ -771,8 +772,11 @@ export default function createFavoritesLayout(WidgetLayout) {
 		}
 
 		/**
-		 * Opens the item with aras.uiShowItem, which re-fetches it and runs the
-		 * ItemType's OnShowItem event as any other "open item" does. A deleted or
+		 * Opens the item as the TOC's Favorites does. An Item favorite holds the
+		 * item's config_id, which for a versionable ItemType is the id of its
+		 * FIRST generation, so the latest generation is looked up first
+		 * (openLatestItem). The open itself is aras.uiShowItem, which re-fetches
+		 * the item and runs the ItemType's OnShowItem event; a deleted or
 		 * now-inaccessible item raises the standard "access restricted or does not
 		 * exist" alert.
 		 */
@@ -781,7 +785,7 @@ export default function createFavoritesLayout(WidgetLayout) {
 			if (!row || !row.dataset.itemId) {
 				return;
 			}
-			aras.uiShowItem(row.dataset.type, row.dataset.itemId);
+			openLatestItem(row.dataset.type, row.dataset.itemId);
 		}
 	};
 }
