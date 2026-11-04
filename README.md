@@ -10,7 +10,7 @@ one screen. Set it as each user's
 [login view](#making-home-the-start-page) and Home is the first thing they
 see.
 
-![The Home dashboard in Innovator 14.0.25: In-Basket Tasks and Pinned ItemTypes on the left, Favorites in the middle, Recently Viewed on the right](docs/home-dashboard.png)
+![The Home dashboard in Innovator 14.35: In-Basket Tasks and Pinned ItemTypes on the left, Quick Find in the centre showing results for "assembly", then Favorites and Recently Viewed on the right](docs/home-dashboard.png)
 
 Home answers the questions people log in with:
 
@@ -70,6 +70,9 @@ after **Refresh** in the widget's menu.
     one (or the first), and **Escape** clears the box.
 - **Choosing what to search:** click the filter button next to the box. It
   shows how many ItemTypes are searched.
+
+  <img src="docs/quick-find-filter.png" width="407" alt="The Quick Find filter panel: Parts, Documents and CAD Documents ticked, the Parts field dropdown open with Part Number and Name ticked, and the Change Management folder expanded below">
+
   - The ItemTypes are listed in the same folders as your navigation panel. Tick
     the ones to search, up to 8 (the limit keeps searches fast).
   - Type in the panel's box to find an ItemType quickly. A badge on a folder
