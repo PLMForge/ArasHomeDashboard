@@ -1,0 +1,32 @@
+﻿<AML>
+ <Item type="Dashboard Widget Template" id="7A75F9DCF3094BA29B86B75645F13195" action="add">
+  <height_size>8</height_size>
+  <icon>../images/Search.svg</icon>
+  <label xml:lang="en">Quick Find Widget</label>
+  <type>QuickFind</type>
+  <width_size>1</width_size>
+  <name>Quick Find</name>
+  <Relationships>
+   <Item type="Dashboard Widget Template Prop" id="FDB86EC6A7B6416BA02A4C962DB4AFE5" action="add">
+    <hidden>0</hidden>
+    <label xml:lang="en">ItemTypes (Type: field, field; ...)</label>
+    <name>item_types</name>
+    <prop_predefined>Part: item_number, name; Document: item_number, name; CAD: item_number, name</prop_predefined>
+    <prop_type>text</prop_type>
+    <required>0</required>
+    <sort_order>128</sort_order>
+    <source_id keyed_name="Quick Find" type="Dashboard Widget Template">7A75F9DCF3094BA29B86B75645F13195</source_id>
+   </Item>
+   <Item type="Dashboard Widget Template Prop" id="B9A209A7B48F4FC1B69F7EE187E44872" action="add">
+    <hidden>0</hidden>
+    <label xml:lang="en">Results per ItemType</label>
+    <name>max_per_type</name>
+    <prop_predefined>5</prop_predefined>
+    <prop_type>integer</prop_type>
+    <required>0</required>
+    <sort_order>256</sort_order>
+    <source_id keyed_name="Quick Find" type="Dashboard Widget Template">7A75F9DCF3094BA29B86B75645F13195</source_id>
+   </Item>
+  </Relationships>
+ </Item>
+</AML>

@@ -4,9 +4,9 @@ A friendlier home page for Aras Innovator, packaged for administrators.
 
 New users need a starting point that doesn't depend on already knowing the
 Contents tree. Experienced users want the work they do every day one click
-away. This package gives you both in one Aras Update install: four dashboard
-widgets, and a ready-made **Home** dashboard that brings them together on one
-screen. Set it as each user's
+away. This package gives you both in one Aras Update install: five dashboard
+widgets, and a ready-made **Home** dashboard that brings four of them together on
+one screen. Set it as each user's
 [login view](#making-home-the-start-page) and Home is the first thing they
 see.
 
@@ -37,21 +37,71 @@ favorites are listed here*.
 | **Pinned ItemTypes** | The ItemTypes the user has pinned in the navigation panel, as clickable tiles. Click a tile to open that ItemType's search. Updates live when pins change. |
 | **Recently Viewed** | Items the user has opened, newest first, with a filter by ItemType. Updates live as items are opened, and is kept between sessions. A versionable item is listed once, however many of its generations were opened. |
 | **Favorites** | Items the user has marked as favorites, across all ItemTypes, with a filter by ItemType. Click an item to open it. Updates live as items are added to or removed from favorites. |
+| **Quick Find** | A search box across chosen ItemTypes. It finds items by number from the first character, and by any word in their chosen fields from the third. Results are grouped by ItemType. Enter or a click opens the item. A filter button lets each user choose the ItemTypes and fields. Not on the Home dashboard: add it where you want it. |
 
-For a versionable item, both widgets open its **latest generation**, as the
-Favorites list in the table of contents does, even if the item was versioned
-after it was viewed or marked as a favorite.
+For a versionable item, Favorites and Recently Viewed open its **latest
+generation**, as the Favorites list in the table of contents does, even if the
+item was versioned after it was viewed or marked as a favorite.
 
-Both widgets list only items the user can still read. If an item becomes
-unreadable to the user, it disappears from both widgets but stays in the saved
-list and in the user's favorites; if access returns, so does the entry. Causes
-include:
+Favorites and Recently Viewed list only items the user can still read. If an
+item becomes unreadable to the user, it disappears from both widgets but stays
+in the saved list and in the user's favorites; if access returns, so does the
+entry. Causes include:
 - a Mandatory Access Control policy;
 - a permission change;
 - the item being deleted.
 
 The widgets ask the server each time they load or are refreshed. Otherwise they
 rely on an answer at most a minute old.
+
+### Using Quick Find
+
+- **Searching:** type in the box.
+  - From the first character, Quick Find lists items whose number (keyed name)
+    starts with what you typed.
+  - From the third character, it also lists items where every word you typed
+    appears in one of the searched fields, in any order. These come most
+    recently changed first.
+- **Results:** grouped by ItemType, up to 5 of each.
+  - Click a result to open it.
+  - **Arrow keys** move through the results, **Enter** opens the highlighted
+    one (or the first), and **Escape** clears the box.
+- **Choosing what to search:** click the filter button next to the box. It
+  shows how many ItemTypes are searched.
+  - The ItemTypes are listed in the same folders as your navigation panel. Tick
+    the ones to search, up to 8 (the limit keeps searches fast).
+  - Type in the panel's box to find an ItemType quickly. A badge on a folder
+    shows how many of its ItemTypes you search.
+  - Each ticked ItemType has a field dropdown. The fields shown in that
+    ItemType's search grid come first. At least one field stays ticked.
+  - **Done** applies your choice. It is saved in this browser, for this widget.
+    **Use defaults** goes back to the widget's own setting.
+- **Access:** Quick Find only shows items you could find in that ItemType's
+  own search. Your permissions and any Mandatory Access Control policy apply.
+
+### Quick Find settings
+
+Quick Find is not on Home. Add it to a dashboard in edit mode, then edit the
+widget to set:
+
+- **ItemTypes:** what users search until they choose their own. For example:
+  `Part: item_number, name; Document: item_number, name; CAD`.
+  - Use property names, not labels.
+  - An ItemType with no field list searches its keyed name, item number and
+    name, whichever it has.
+  - Fields that don't exist, or that aren't short text, are skipped with a
+    warning in the browser console.
+- **Results per ItemType:** default 5.
+
+Short text, sequence and multilingual fields can be searched. Long text fields
+(data type Text) can't, because searching them is slow on large ItemTypes.
+
+Users only see ItemTypes from their own navigation panel. If the setting names
+an ItemType that a user's navigation panel doesn't include, Quick Find doesn't
+search it for that user.
+
+Quick Find was tested with 100,000 items in each of Part, Document and CAD, and
+with a Mandatory Access Control policy active.
 
 The ItemType filter on Recently Viewed and Favorites is remembered per user and
 per widget in the browser's localStorage, so it survives a page reload. It is
@@ -149,13 +199,14 @@ New items, in the package `PLMForge.DashboardWidgets`:
 | Pinned ItemTypes | `PinnedItemTypes` | none |
 | Recently Viewed | `RecentlyViewed` | `max_items`: number of items shown (default 15; Home sets 11). |
 | Favorites | `Favorites` | none |
+| Quick Find | `QuickFind` | `item_types`: the ItemTypes and fields searched until a user chooses their own. `max_per_type`: results per ItemType (default 5). See [Quick Find settings](#quick-find-settings). |
 
 Additions to two existing Aras items (the AML is in
 `1.0.0/Imports/FRG_DashboardWidgets/Fixes/`):
 
 | Aras item | Change |
 |---|---|
-| List **Dashboard Widget Types** | Adds the values `InBasketCounts`, `PinnedItemTypes`, `RecentlyViewed` and `Favorites`. |
+| List **Dashboard Widget Types** | Adds the values `InBasketCounts`, `PinnedItemTypes`, `RecentlyViewed`, `Favorites` and `QuickFind`. |
 | ItemType **Core_GlobalLayout** | Adds the Text property `cust_recent_items`, where each user's Recently Viewed list (at most 25 entries) is saved. |
 
 One dashboard, also in the package: **Home**. See
@@ -287,8 +338,8 @@ Aras Update has no uninstall action. To remove the widgets by hand:
    `dashboard.es.js` import line if the stock file did not have them.
 2. Delete the `FRG_*.js` files from `Innovator\Client\customer\dashboard\`.
 3. In Innovator, delete the **Home** dashboard and remove these widgets from
-   any other dashboards. Then delete the four Dashboard Widget Templates, the
-   four list values and the `cust_recent_items` property. Deleting the property also deletes every
+   any other dashboards. Then delete the five Dashboard Widget Templates, the
+   five list values and the `cust_recent_items` property. Deleting the property also deletes every
    user's saved Recently Viewed list.
 
 ## Known limitations
@@ -301,12 +352,15 @@ Aras Update has no uninstall action. To remove the widgets by hand:
   "Assigned to Group" is used as it is, even if it was saved in another
   search mode. To get the widget's version, delete it and click the number
   again.
+- A user's Quick Find choice of ItemTypes and fields is saved in their
+  browser. In another browser or on another machine, they start from the
+  widget's setting again.
 - Widget text is English only.
 
 ## Troubleshooting
 
 - **The widget isn't offered in the dashboard editor:** check that the
-  Database module ran, and look for the four templates under Dashboard
+  Database module ran, and look for the five templates under Dashboard
   Widget Templates.
 - **The widget is offered but renders blank:** check that the Client Code
   Tree module ran, then reload the browser.
@@ -316,8 +370,8 @@ Aras Update has no uninstall action. To remove the widgets by hand:
   If it doesn't, the Client application hasn't restarted yet: restart it in
   IIS.
 - **Errors appear in the browser console:** the widgets log with prefixes
-  such as `[FRG]`, `[InBasketCounts]`, `[PinnedItemTypes]`, `[RecentlyViewed]`, `[Favorites]`
-  and `[RecentItems]`.
+  such as `[FRG]`, `[InBasketCounts]`, `[PinnedItemTypes]`, `[RecentlyViewed]`, `[Favorites]`,
+  `[RecentItems]` and `[QuickFind]`.
 - **The Database module fails:** Aras Update shows only that the import
   failed. The details are in the `import_<timestamp>.txt` file in that run's
   Aras Update log folder.

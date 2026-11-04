@@ -42,6 +42,7 @@ export async function registerAll(api) {
 	await loadPinnedItemTypes(addWidgetLayout, WidgetLayout);
 	await loadRecentlyViewed(addWidgetLayout, WidgetLayout);
 	await loadFavorites(addWidgetLayout, WidgetLayout);
+	await loadQuickFind(addWidgetLayout, WidgetLayout);
 }
 
 async function loadInBasketCounts(addWidgetLayout, addFormCustomizer, WidgetLayout) {
@@ -114,5 +115,17 @@ async function loadFavorites(addWidgetLayout, WidgetLayout) {
 		});
 	} catch (ex) {
 		console.error('[FRG][Favorites] registration failed', ex);
+	}
+}
+
+async function loadQuickFind(addWidgetLayout, WidgetLayout) {
+	try {
+		const { default: createQuickFindLayout } = await import('./FRG_quickFindWidget.js');
+
+		addWidgetLayout({
+			QuickFind: createQuickFindLayout(WidgetLayout)
+		});
+	} catch (ex) {
+		console.error('[FRG][QuickFind] registration failed', ex);
 	}
 }

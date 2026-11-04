@@ -1,8 +1,8 @@
 # FRG_DashboardWidgets 1.0.0
 
 An Aras Update package that gives Aras Innovator users a friendlier home
-page: four custom dashboard widgets, and a ready-made **Home** dashboard that
-shows them together.
+page: five custom dashboard widgets, and a ready-made **Home** dashboard that
+shows four of them together.
 
 | Widget | Type key | Module |
 |---|---|---|
@@ -10,6 +10,7 @@ shows them together.
 | Pinned ItemTypes | `PinnedItemTypes` | `FRG_pinnedItemTypesWidget.js` |
 | Recently Viewed | `RecentlyViewed` | `FRG_recentlyViewedWidget.js` (+ `FRG_recentItems.js`) |
 | Favorites | `Favorites` | `FRG_favoritesWidget.js` |
+| Quick Find | `QuickFind` | `FRG_quickFindWidget.js` (+ `FRG_quickFindSearch.js`) |
 
 `FRG_widgetContextMenu.js` adds the right-click menus to Pinned ItemTypes,
 Favorites and Recently Viewed. `FRG_itemVersions.js` makes Favorites and
@@ -34,12 +35,14 @@ See `README.md` in the ArasHomeDashboard repository for the full guide.
     resources.config.xml
     resource.neutral          <- module labels shown in the installer
   Innovator/Client/customer/dashboard/
-    FRG_registerWidgets.js    <- entry point: registers all four widgets
+    FRG_registerWidgets.js    <- entry point: registers all five widgets
     FRG_inBasketCountsWidget.js
     FRG_pinnedItemTypesWidget.js
     FRG_recentItems.js
     FRG_recentlyViewedWidget.js
     FRG_favoritesWidget.js
+    FRG_quickFindWidget.js
+    FRG_quickFindSearch.js    <- Quick Find search logic, used by the widget
     FRG_widgetContextMenu.js  <- right-click menus shared by three widgets
     FRG_itemVersions.js       <- latest generation / one entry per item, for two widgets
     FRG_itemAccess.js         <- hides entries the user can no longer read, for two widgets
@@ -49,7 +52,7 @@ See `README.md` in the ArasHomeDashboard repository for the full guide.
   Imports/
     imports.mf                    <- package PLMForge.DashboardWidgets
     FRG_DashboardWidgets/
-      Dashboard Widget Template/  <- the four templates (exported AML)
+      Dashboard Widget Template/  <- the five templates (exported AML)
       cui_Dashboard/Home.xml      <- the Home dashboard (exported, then cleaned)
       Fixes/                      <- edits to items owned by Aras packages
 ```
@@ -76,10 +79,10 @@ package's rows to it.
 Imports the AML under `Imports/`:
 
 - the Dashboard Widget Templates *InBasket Counts*, *Pinned ItemTypes*,
-  *Recently Viewed* and *Favorites*;
+  *Recently Viewed*, *Favorites* and *Quick Find*;
 - the *Home* dashboard (cui_Dashboard), laid out to fit a 1080p screen;
-- the values `InBasketCounts`, `PinnedItemTypes`, `RecentlyViewed` and `Favorites` on the
-  List *Dashboard Widget Types*;
+- the values `InBasketCounts`, `PinnedItemTypes`, `RecentlyViewed`,
+  `Favorites` and `QuickFind` on the List *Dashboard Widget Types*;
 - the Text property `cust_recent_items` on the ItemType *Core_GlobalLayout*.
 
 Then, only where the release has dashboard sharing (the

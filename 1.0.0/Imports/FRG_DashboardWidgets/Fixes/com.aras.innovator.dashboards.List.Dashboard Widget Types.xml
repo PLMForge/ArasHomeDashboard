@@ -25,6 +25,12 @@
     <source_id>314FD17756864F96BDAE6513E02CD64B</source_id>
     <value>Favorites</value>
    </Item>
+   <Item type="Value" id="5E61A469E7854DEEA0BEC8012B1B4018" action="add">
+    <label xml:lang="en">Quick Find</label>
+    <sort_order>1024</sort_order>
+    <source_id>314FD17756864F96BDAE6513E02CD64B</source_id>
+    <value>QuickFind</value>
+   </Item>
   </Relationships>
  </Item>
 </AML>
