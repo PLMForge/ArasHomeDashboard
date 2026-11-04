@@ -36,6 +36,7 @@
 import { attachContextMenu, isFavoriteInStore, removeFavorite } from './FRG_widgetContextMenu.js';
 import { openLatestItem } from './FRG_itemVersions.js';
 import { checkReadable, readableEntries } from './FRG_itemAccess.js';
+import { allowFormControls } from './FRG_widgetInput.js';
 
 const STYLE_ELEMENT_ID = 'favorites-widget-style';
 const ALL_TYPES_KEY = '__all';
@@ -527,6 +528,7 @@ export default function createFavoritesLayout(WidgetLayout) {
 		#buildDom() {
 			const root = document.createElement('div');
 			root.className = 'fvw';
+			allowFormControls(root);
 
 			const toolbar = document.createElement('div');
 			toolbar.className = 'fvw__toolbar';

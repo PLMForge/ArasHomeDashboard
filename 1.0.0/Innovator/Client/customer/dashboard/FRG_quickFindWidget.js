@@ -58,6 +58,7 @@ import {
 	tocTypes,
 	typeNamesUnder
 } from './FRG_quickFindSearch.js';
+import { allowFormControls } from './FRG_widgetInput.js';
 
 const STYLE_ELEMENT_ID = 'quick-find-widget-style';
 const DEFAULT_MAX = 5;
@@ -863,6 +864,7 @@ export default function createQuickFindLayout(WidgetLayout) {
 		#buildDom() {
 			const root = document.createElement('div');
 			root.className = 'qfw';
+			allowFormControls(root);
 
 			const bar = document.createElement('div');
 			bar.className = 'qfw__bar';

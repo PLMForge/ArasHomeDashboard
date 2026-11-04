@@ -39,6 +39,7 @@
 import { attachContextMenu, reportActionError } from './FRG_widgetContextMenu.js';
 import { openLatestItem } from './FRG_itemVersions.js';
 import { checkReadable, readableEntries } from './FRG_itemAccess.js';
+import { allowFormControls } from './FRG_widgetInput.js';
 
 const STYLE_ELEMENT_ID = 'recently-viewed-widget-style';
 const DEFAULT_MAX_ITEMS = 15;
@@ -465,6 +466,7 @@ export default function createRecentlyViewedLayout(WidgetLayout, recentItems) {
 		#buildDom() {
 			const root = document.createElement('div');
 			root.className = 'rvw';
+			allowFormControls(root);
 
 			const toolbar = document.createElement('div');
 			toolbar.className = 'rvw__toolbar';
